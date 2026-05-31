@@ -59,6 +59,18 @@ public final class AuthStore: ObservableObject {
         }
     }
 
+    public func signUp(name: String, email: String, password: String) async {
+        errorMessage = nil; infoMessage = nil
+        do {
+            let token = try await service.signUp(name: name, email: email, password: password)
+            tokenStore.token = token
+            isSignedIn = true
+        } catch {
+            errorMessage = Self.authMessage(for: error)
+            isSignedIn = false
+        }
+    }
+
     static func authMessage(for error: Error) -> String {
         if case let APIError.auth(code, _) = error {
             switch code {

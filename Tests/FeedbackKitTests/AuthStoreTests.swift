@@ -86,4 +86,23 @@ final class AuthStoreTests: XCTestCase {
         XCTAssertFalse(auth.isSignedIn)
         XCTAssertEqual(auth.errorMessage, "Wrong email or password.")
     }
+
+    func testSignUpStoresTokenAndFlipsState() async {
+        let service = StubAuthService()
+        service.signUpToken = "new_tok"
+        let store = InMemoryTokenStore()
+        let auth = AuthStore(service: service, tokenStore: store)
+        await auth.signUp(name: "Ada", email: "ada@x.com", password: "secret123")
+        XCTAssertTrue(auth.isSignedIn)
+        XCTAssertEqual(store.token, "new_tok")
+    }
+
+    func testSignUpDuplicateEmailSetsSpecificError() async {
+        let service = StubAuthService()
+        service.signUpError = APIError.auth(code: "USER_ALREADY_EXISTS", message: "x")
+        let auth = AuthStore(service: service, tokenStore: InMemoryTokenStore())
+        await auth.signUp(name: "Ada", email: "ada@x.com", password: "secret123")
+        XCTAssertFalse(auth.isSignedIn)
+        XCTAssertEqual(auth.errorMessage, "An account with this email already exists.")
+    }
 }
