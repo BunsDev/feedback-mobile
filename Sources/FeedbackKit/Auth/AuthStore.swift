@@ -3,6 +3,9 @@ import Foundation
 public protocol AuthService: Sendable {
     func sendOTP(email: String) async throws
     func verifyOTP(email: String, code: String) async throws -> String  // returns session token
+    func signInWithPassword(email: String, password: String) async throws -> String  // session token
+    func signUp(name: String, email: String, password: String) async throws -> String // session token
+    func requestPasswordReset(email: String) async throws
 }
 
 @MainActor

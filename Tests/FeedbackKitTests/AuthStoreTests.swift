@@ -10,6 +10,27 @@ final class StubAuthService: AuthService, @unchecked Sendable {
         sentTo = email
     }
     func verifyOTP(email: String, code: String) async throws -> String { tokenToReturn }
+
+    // Password auth knobs
+    var passwordToken = "pw_tok"
+    var signUpToken = "signup_tok"
+    var passwordError: Error?
+    var signUpError: Error?
+    var resetError: Error?
+    var resetRequestedFor: String?
+
+    func signInWithPassword(email: String, password: String) async throws -> String {
+        if let passwordError { throw passwordError }
+        return passwordToken
+    }
+    func signUp(name: String, email: String, password: String) async throws -> String {
+        if let signUpError { throw signUpError }
+        return signUpToken
+    }
+    func requestPasswordReset(email: String) async throws {
+        if let resetError { throw resetError }
+        resetRequestedFor = email
+    }
 }
 
 @MainActor
