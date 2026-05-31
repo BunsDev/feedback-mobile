@@ -124,4 +124,15 @@ final class AuthStoreTests: XCTestCase {
         XCTAssertNil(auth.infoMessage)
         XCTAssertEqual(auth.errorMessage, "Something went wrong. Please try again.")
     }
+
+    func testClearMessagesResetsErrorAndInfo() async {
+        let service = StubAuthService()
+        service.passwordError = APIError.auth(code: "INVALID_EMAIL_OR_PASSWORD", message: "x")
+        let auth = AuthStore(service: service, tokenStore: InMemoryTokenStore())
+        await auth.signInWithPassword(email: "v@x.com", password: "bad")
+        XCTAssertNotNil(auth.errorMessage)
+        auth.clearMessages()
+        XCTAssertNil(auth.errorMessage)
+        XCTAssertNil(auth.infoMessage)
+    }
 }

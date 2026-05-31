@@ -82,15 +82,20 @@ public final class AuthStore: ObservableObject {
     }
 
     static func authMessage(for error: Error) -> String {
-        if case let APIError.auth(code, _) = error {
+        if case let APIError.auth(code, message) = error {
             switch code {
             case "INVALID_EMAIL_OR_PASSWORD": return "Wrong email or password."
             case "USER_ALREADY_EXISTS": return "An account with this email already exists."
-            case "VALIDATION_ERROR": return "Password must be at least 8 characters."
+            case "VALIDATION_ERROR": return message ?? "Password must be at least 8 characters."
             default: break
             }
         }
         return "Something went wrong. Please try again."
+    }
+
+    public func clearMessages() {
+        errorMessage = nil
+        infoMessage = nil
     }
 
     public func signOut() {
