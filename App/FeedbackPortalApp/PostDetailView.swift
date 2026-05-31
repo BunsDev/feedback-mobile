@@ -25,7 +25,9 @@ struct PostDetailView: View {
         }
         .navigationTitle("Post")
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $isShowingSignIn) {
+        .sheet(isPresented: $isShowingSignIn, onDismiss: {
+            Task { await vm?.retryPendingAction() }
+        }) {
             SignInSheet()
         }
         .task {
@@ -85,6 +87,12 @@ private struct PostDetailContent: View {
                             .foregroundStyle(post.hasVoted ? .blue : .primary)
                         }
                         .buttonStyle(.borderless)
+
+                        if let error = vm.errorMessage {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundStyle(.red)
+                        }
                     }
                     .padding(.vertical, 4)
                 }
