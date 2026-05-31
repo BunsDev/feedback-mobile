@@ -66,4 +66,24 @@ final class AuthStoreTests: XCTestCase {
             XCTAssertEqual(auth.errorMessage, "Couldn't send a code. Please try again.")
         }
     }
+
+    func testPasswordSignInStoresTokenAndFlipsState() async {
+        let service = StubAuthService()
+        service.passwordToken = "pw_tok"
+        let store = InMemoryTokenStore()
+        let auth = AuthStore(service: service, tokenStore: store)
+        await auth.signInWithPassword(email: "v@x.com", password: "secret123")
+        XCTAssertTrue(auth.isSignedIn)
+        XCTAssertEqual(store.token, "pw_tok")
+        XCTAssertNil(auth.errorMessage)
+    }
+
+    func testPasswordSignInBadCredentialsSetsSpecificError() async {
+        let service = StubAuthService()
+        service.passwordError = APIError.auth(code: "INVALID_EMAIL_OR_PASSWORD", message: "x")
+        let auth = AuthStore(service: service, tokenStore: InMemoryTokenStore())
+        await auth.signInWithPassword(email: "v@x.com", password: "bad")
+        XCTAssertFalse(auth.isSignedIn)
+        XCTAssertEqual(auth.errorMessage, "Wrong email or password.")
+    }
 }
