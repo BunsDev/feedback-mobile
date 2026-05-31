@@ -105,4 +105,23 @@ final class AuthStoreTests: XCTestCase {
         XCTAssertFalse(auth.isSignedIn)
         XCTAssertEqual(auth.errorMessage, "An account with this email already exists.")
     }
+
+    func testRequestPasswordResetSetsInfoMessageAndDoesNotSignIn() async {
+        let service = StubAuthService()
+        let auth = AuthStore(service: service, tokenStore: InMemoryTokenStore())
+        await auth.requestPasswordReset(email: "v@x.com")
+        XCTAssertEqual(service.resetRequestedFor, "v@x.com")
+        XCTAssertEqual(auth.infoMessage, "Check your email for a reset link.")
+        XCTAssertFalse(auth.isSignedIn)
+        XCTAssertNil(auth.errorMessage)
+    }
+
+    func testRequestPasswordResetFailureSetsError() async {
+        let service = StubAuthService()
+        service.resetError = APIError.transport("offline")
+        let auth = AuthStore(service: service, tokenStore: InMemoryTokenStore())
+        await auth.requestPasswordReset(email: "v@x.com")
+        XCTAssertNil(auth.infoMessage)
+        XCTAssertEqual(auth.errorMessage, "Something went wrong. Please try again.")
+    }
 }

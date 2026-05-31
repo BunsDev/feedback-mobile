@@ -71,6 +71,16 @@ public final class AuthStore: ObservableObject {
         }
     }
 
+    public func requestPasswordReset(email: String) async {
+        errorMessage = nil; infoMessage = nil
+        do {
+            try await service.requestPasswordReset(email: email)
+            infoMessage = "Check your email for a reset link."
+        } catch {
+            errorMessage = Self.authMessage(for: error)
+        }
+    }
+
     static func authMessage(for error: Error) -> String {
         if case let APIError.auth(code, _) = error {
             switch code {
