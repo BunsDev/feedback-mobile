@@ -12,7 +12,7 @@ concurrency:
 jobs:
   test:
     name: Test & Lint (SPM)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
@@ -30,7 +30,7 @@ jobs:
 
   ios-build:
     name: Build SDK and FeedbackPortalApp for iOS
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
 
